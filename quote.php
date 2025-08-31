@@ -112,8 +112,10 @@
 			</section>
 
 			<section id="contact" class="contact">
-				<form action="/quote.php" method="post">
-					<h3>Get a instant quote</h3>
+				<form
+					onsubmit="event.preventDefault();alert('Thanks — quote request submitted (demo).');"
+				>
+					<h3>Request a quote</h3>
 					<label for="name">Name</label>
 					<input id="name" name="name" placeholder="Your name" required />
 					<label for="email">Email or phone</label>
