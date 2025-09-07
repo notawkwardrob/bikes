@@ -4,5 +4,6 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     echo "There was a problem with your submission, please try again.";
     exit;
 }
-echo"$_POST[\"email\"]";
+$email = htmlspecialchars($_POST["email"]);
+echo"$email";
 ?>
