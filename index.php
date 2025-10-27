@@ -126,16 +126,20 @@ header("Pragma: no-cache");
 					<input
 						id="email"
 						name="email"
-						placeholder="your@email.com or 07..."
+						placeholder="your@email.com"
+												collect="collect"
+						placeholder="Collection postcode"
+												deliver="deliver"
+						placeholder="Delivery postcode"
 						required
 					/>
 					<label for="details"
-						>Details (bike make/model, dates & locations)</label
+						>Details (bike make/model)</label
 					>
 					<textarea
 						id="details"
 						name="details"
-						placeholder="e.g. BMW R1250GS — pickup: Leeds, delivery: Brighton — week of 10th Aug"
+						placeholder="Bike model"
 					></textarea>
 					<div style="margin-top: 10px; display: flex; gap: 10px">
 						  <input type="submit" value="Submit">
