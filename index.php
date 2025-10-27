@@ -121,15 +121,15 @@ header("Pragma: no-cache");
 				<form action="/quote.php" method="post">
 					<h3>Get a instant quote</h3>
 					<label for="name">Name</label>
-					<input id="name" name="name" placeholder="Your name" required />
+					<input id="name" name="customerName" placeholder="Your name" required />
 					<label for="collect">Collection postcode</label>
 					<input id="collect" name="collectPostcode" placeholder="Postcode of collection address" required />
 					<label for="deliver">Deliver postcode</label>
 					<input id="deliver" name="deliverPostcode" placeholder="Postcode of delivery address" required />
-					<label for="email">Email or phone</label>
+					<label for="email">Email</label>
 					<input
 						id="email"
-						name="email"
+						name="customerEmail"
 						placeholder="your@email.com"
 						required
 					/>

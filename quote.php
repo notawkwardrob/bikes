@@ -4,6 +4,10 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     echo "There was a problem with your submission, please try again.";
     exit;
 }
-$email = htmlspecialchars($_POST["email"]);
-echo"$email";
+$customerEmail = htmlspecialchars($_POST["customerEmail"]);
+$collectPostcode = htmlspecialchars($_POST["collectPostcode"]);
+$deliveryPostcode = htmlspecialchars($_POST["deliveryPostcode"]);
+$bikeModel = htmlspecialchars($_POST["bikeModel"]);
+$customerName = htmlspecialchars($_POST["customerName"]);
+echo"$customerEmail, $collectPostcode, $deliveryPostcode, $bikeModel, $customerName";
 ?>
