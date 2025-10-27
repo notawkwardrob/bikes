@@ -138,7 +138,7 @@ header("Pragma: no-cache");
 						placeholder="e.g. BMW R1250GS — pickup: Leeds, delivery: Brighton — week of 10th Aug"
 					></textarea>
 					<div style="margin-top: 10px; display: flex; gap: 10px">
-						<button class="btn btn-primary" type="submit">Send request</button>
+						  <input type="submit" value="Submit">
 						<a class="btn btn-ghost" href="mailto:info@bikesinavan.co.uk"
 							>Email us</a
 						>
