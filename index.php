@@ -134,13 +134,12 @@ header("Pragma: no-cache");
 						required
 					/>
 					<label for="details"
-						>Details (bike make/model)</label
-					>
-					<input>
+						>Details (bike make/model)</label>
+					<input
 						id="details"
 						name="bikeModel"
 						placeholder="Make and model of bike, any special requirements"
-					</input>
+					/>
 					<div style="margin-top: 10px; display: flex; gap: 10px">
 						  <input type="submit" value="Submit">
 						<a class="btn btn-ghost" href="mailto:info@bikesinavan.co.uk"
