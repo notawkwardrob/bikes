@@ -138,7 +138,7 @@ header("Pragma: no-cache");
 					>
 					<textarea
 						id="details"
-						name="details"
+						name="bikeModel"
 						placeholder="Make and model of bike, any special requirements"
 					></textarea>
 					<div style="margin-top: 10px; display: flex; gap: 10px">

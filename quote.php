@@ -6,8 +6,8 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
 }
 $customerEmail = htmlspecialchars($_POST["customerEmail"]);
 $collectPostcode = htmlspecialchars($_POST["collectPostcode"]);
-$deliveryPostcode = htmlspecialchars($_POST["deliveryPostcode"]);
+$deliverPostcode = htmlspecialchars($_POST["deliverPostcode"]);
 $bikeModel = htmlspecialchars($_POST["bikeModel"]);
 $customerName = htmlspecialchars($_POST["customerName"]);
-echo"$customerEmail, $collectPostcode, $deliveryPostcode, $bikeModel, $customerName";
+echo"$customerEmail, $collectPostcode, $deliverPostcode, $bikeModel, $customerName";
 ?>
