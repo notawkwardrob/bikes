@@ -122,15 +122,15 @@ header("Pragma: no-cache");
 					<h3>Get a instant quote</h3>
 					<label for="name">Name</label>
 					<input id="name" name="name" placeholder="Your name" required />
+					<label for="collect">Collection postcode</label>
+					<input id="collect" name="collectPostcode" placeholder="Postcode of collection address" required />
+					<label for="deliver">Deliver postcode</label>
+					<input id="deliver" name="deliverPostcode" placeholder="Postcode of delivery address" required />
 					<label for="email">Email or phone</label>
 					<input
 						id="email"
 						name="email"
 						placeholder="your@email.com"
-												collect="collect"
-						placeholder="Collection postcode"
-												deliver="deliver"
-						placeholder="Delivery postcode"
 						required
 					/>
 					<label for="details"
@@ -139,7 +139,7 @@ header("Pragma: no-cache");
 					<textarea
 						id="details"
 						name="details"
-						placeholder="Bike model"
+						placeholder="Make and model of bike, any special requirements"
 					></textarea>
 					<div style="margin-top: 10px; display: flex; gap: 10px">
 						  <input type="submit" value="Submit">
