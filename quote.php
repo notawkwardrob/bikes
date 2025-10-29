@@ -1,5 +1,6 @@
 <?php
-
+require_once '.giro/api/API.php';
+$API = $_ENV["mapsApi"];
 
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
     http_response_code(403);
@@ -20,7 +21,7 @@ function getDistance($start, $end) {
     $postcode2 = preg_replace('/\s+/', '', $end);
     $result    = array();
 
-    $url = "http://maps.googleapis.com/maps/api/distancematrix/json?origins=$postcode1&destinations=$postcode2&mode=driving&language=en-EN&sensor=false";
+    $url = "http://maps.googleapis.com/maps/api/distancematrix/json?origins=$postcode1&destinations=$postcode2&mode=driving&language=en-EN&sensor=falsekey=";
 
     $data   = @file_get_contents($url);
     $result = json_decode($data, true);
