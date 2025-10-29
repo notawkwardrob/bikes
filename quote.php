@@ -24,7 +24,7 @@ function getDistance($start, $end) {
 
     $data   = @file_get_contents($url);
     $result = json_decode($data, true);
-    //print_r($result);  //outputs the array
+    print_r($result);  //outputs the array
 
     return array( // converts the units
         "meters" => $result["rows"][0]["elements"][0]["distance"]["value"],
