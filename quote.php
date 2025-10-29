@@ -33,6 +33,6 @@ function getDistance($start, $end) {
         "miles" => $result["rows"][0]["elements"][0]["distance"]["value"] * 0.000621371
     );
 }
-
+getDistance($collectPostcode, $deliverPostcode)
 
 ?>
