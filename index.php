@@ -48,7 +48,12 @@ Quote: £{$submitted_quote['quote']}
 $headers = "From: no-reply@bikesinavan.co.uk\r\n";
 $headers .= "Reply-To: {$submitted_quote['email']}\r\n";
 
-mail($to, $subject, $message, $headers);
+$sent = mail($to, $subject, $message, $headers);
+if (!$sent) {
+    error_log("Mail failed to send to $to");
+} else {
+    error_log("Mail sent successfully to $to");
+}
     // Save to database
     $stmt = $pdo->prepare("INSERT INTO quotes 
         (collection, delivery, miles, minutes, quote, email, bike_model)
