@@ -6,7 +6,7 @@ header("Pragma: no-cache");
 // Database configuration
 $dbHost = 'localhost:3306';
 $dbName = 'bikesina_quotes';
-$dbUser = 'bikesina';
+$dbUser = 'bikesina_bikesina';
 $dbPass = 'Temppassword';
 
 $submitted_quote = null;
