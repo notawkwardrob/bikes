@@ -30,6 +30,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
         'bikeModel'  => htmlspecialchars($_POST['bikeModel'] ?? '')
     ];
 
+	// email me
+	$to = 'coxy911@gmail.com';  
+$subject = 'New BikesInAVan Quote Submitted';
+$message = "
+A new motorcycle transport quote has been submitted:
+
+Collection: {$submitted_quote['collection']}
+Delivery: {$submitted_quote['delivery']}
+Distance: {$submitted_quote['miles']} miles
+Time: {$submitted_quote['minutes']} minutes
+Bike: {$submitted_quote['bikeModel']}
+Email: {$submitted_quote['email']}
+Quote: £{$submitted_quote['quote']}
+";
+
+$headers = "From: no-reply@bikesinavan.co.uk\r\n";
+$headers .= "Reply-To: {$submitted_quote['email']}\r\n";
+
+mail($to, $subject, $message, $headers);
     // Save to database
     $stmt = $pdo->prepare("INSERT INTO quotes 
         (collection, delivery, miles, minutes, quote, email, bike_model)
