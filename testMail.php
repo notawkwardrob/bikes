@@ -1,8 +1,5 @@
 <?php
-// mailtest.php
-// Simple test for sending an email from your server
 
-// Recipient email (your address)
 $to = 'coxy911@gmail.com';
 
 // Email subject
