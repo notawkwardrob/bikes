@@ -4,7 +4,7 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
 // Database configuration
-$dbHost = 'localhost:3306';
+$dbHost = 'localhost';
 $dbName = 'bikesina_quotes';
 $dbUser = 'bikesina_bikesina';
 $dbPass = 'Temppassword';
