@@ -1,177 +1,260 @@
 <?php
-
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 ?>
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
-		<title>BikesInAVan — Motorcycle Transport (bikesinavan.co.uk)</title>
-		<meta
-			name="description"
-			content="Safe, insured transport for cherished motorcycles around the UK. Mercedes Sprinter van, experienced driver, careful loading and fast delivery."
-		/>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Roboto:wght@300;400;700&display=swap"
-			rel="stylesheet"
-		/>
-		<link href="style.css" rel="stylesheet" />
-	</head>
-	<body>
-		<div class="site">
-			<header>
-				<div class="logo">
-					<!-- Primary logo / portrait -->
-					<img
-						src="images/ChatGPT Image Aug 10, 2025, 02_00_34 PM.png"
-						alt="BikesInAVan logo"
-					/>
-					<div class="brand">
-						<h1>bikesinavan.co.uk</h1>
-						<p>Secure motorcycle transport • Mercedes Sprinter service</p>
-					</div>
-				</div>
-				<div style="margin-left: auto; text-align: right">
-					<div class="small muted">Call now</div>
-					<div style="font-weight: 800; font-family: Montserrat">
-						07711926842
-					</div>
-					<div class="muted small">info@bikesinavan.co.uk</div>
-				</div>
-			</header>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BikesInAVan — Motorcycle Transport (bikesinavan.co.uk)</title>
+    <meta name="description" content="Safe, insured transport for cherished motorcycles around the UK." />
 
-			<section class="hero">
-				<div class="hero-left">
-					<div class="eyebrow">Trusted motorcycle transport</div>
-					<h2>We move cherished bikes safely — door-to-door across the UK</h2>
-					<p class="lead">
-						Using a purpose-fitted Mercedes Sprinter, with careful loading
-						methods and secure tie-downs, we deliver peace of mind for owners
-						and dealers alike.
-					</p>
-					<div class="cta-row">
-						<a class="btn btn-primary" href="#contact">Get a quote</a>
-						<a class="btn btn-ghost" href="#services">Our services</a>
-					</div>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet" />
 
-					<div style="margin-top: 18px; color: var(--muted); font-size: 14px">
-						<strong>Fast pickups</strong> — Local to national; insured; loved.
-					</div>
-				</div>
+    <style>
+        /* Calculator styling merged into site */
+        .calc-card {
+            background: var(--card);
+            padding: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            margin-top: 20px;
+        }
+        .calc-card label {
+            display: block;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        .calc-card input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            box-sizing: border-box;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        #output table {
+            margin-top: 16px;
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+        }
+        #output th, #output td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        #output th {
+            background: #f3f3f3;
+        }
+        .small { font-size: 0.9em; color: #666; }
+        .error { color: #b00; font-weight: 600; margin-top: 10px; }
+    </style>
+</head>
 
-				<div class="hero-right">
-					<!-- Hero background image: designed for website background, black backdrop -->
-					<div
-						class="bg"
-						style="
-							background-image: url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png');
-							width: 100%;
-							height: 100%;
-						"
-					></div>
-				</div>
-			</section>
+<body>
+<div class="site">
 
-			<section id="services" class="services">
-				<div class="card">
-					<h3>Door-to-door transport</h3>
-					<p>
-						Collection and delivery from home, workshop or showroom. We
-						carefully load and secure each motorcycle using industry-standard
-						gear.
-					</p>
-				</div>
-				<div class="card">
-					<h3>Enclosed, insured transit</h3>
-					<p>
-						All bikes travel inside our Mercedes Sprinter, protected from
-						weather and road debris. Fully insured transport.
-					</p>
-				</div>
-				<div class="card">
-					<h3>Experienced handling</h3>
-					<p>
-						An experienced rider and handler ensures bikes are moved with
-						respect — suitable for classics, modern sportbikes and tourers.
-					</p>
-				</div>
-			</section>
+<header>
+    <div class="logo">
+        <img src="images/ChatGPT Image Aug 10, 2025, 02_00_34 PM.png" alt="BikesInAVan logo"/>
+        <div class="brand">
+            <h1>bikesinavan.co.uk</h1>
+            <p>Secure motorcycle transport.</p>
+        </div>
+    </div>
+    <div style="margin-left:auto;text-align:right">
+        <div class="small muted">Call now</div>
+        <div style="font-weight:800;font-family:Montserrat">07711926842</div>
+        <div class="muted small">info@bikesinavan.co.uk</div>
+    </div>
+</header>
 
-			<section class="about">
-				<img
-				src="/mnt/data/A_logo_for_"bikesinavan.co.uk"_features_a_portrait.png"
-				alt="Driver portrait">
-				<div class="txt">
-					<h3>About BikesInAVan</h3>
-					<p class="muted">
-						With 30 years of motorbike ownership and professional driving
-						experience we really do look after all bikes like they're our own.
-					</p>
-					<p class="small muted">
-						We specialise in single-bike moves, multi-bike loads for dealers and
-						safe transport to events and shows.
-					</p>
-				</div>
-			</section>
+<section class="hero">
+    <div class="hero-left">
+        <div class="eyebrow">Trusted motorcycle transport</div>
+        <h2>We move cherished bikes safely — door-to-door across the UK</h2>
+        <p class="muted">
+            Professional, insured motorcycle transport in a secure, enclosed van.
+            Perfect for classics, moderns and everything in between.
+        </p>
 
-			<section id="contact" class="contact">
-				<form action="/quote.php" method="post">
-					<h3>Get a instant quote</h3>
-					<label for="name">Name</label>
-					<input id="name" name="customerName" placeholder="Your name" required />
-					<label for="collect">Collection postcode</label>
-					<input id="collect" name="collectPostcode" placeholder="Postcode of collection address" required />
-					<label for="deliver">Deliver postcode</label>
-					<input id="deliver" name="deliverPostcode" placeholder="Postcode of delivery address" required />
-					<label for="email">Email</label>
-					<input
-						id="email"
-						name="customerEmail"
-						placeholder="your@email.com"
-						required
-					/>
-					<label for="details"
-						>Details (bike make/model)</label>
-					<input
-						id="details"
-						name="bikeModel"
-						placeholder="Make and model of bike, any special requirements"
-					/>
-					<div style="margin-top: 10px; display: flex; gap: 10px">
-						  <input type="submit" value="Submit">
-						<a class="btn btn-ghost" href="mailto:info@bikesinavan.co.uk"
-							>Email us</a
-						>
-					</div>
-				</form>
+        <div class="cta-row">
+            <a class="btn btn-primary" href="#contact">Get a quote</a>
+            <a class="btn btn-ghost" href="#services">Our services</a>
+        </div>
 
-				<aside
-					style="padding: 18px; background: var(--card); border-radius: 10px"
-				>
-					<h4 style="margin-top: 0">Contact</h4>
-					<p class="muted">Phone: <strong>07711926842</strong></p>
-					<p class="muted">Email: <strong>info@bikesinavan.co.uk</strong></p>
-					<p class="muted">
-						Based in: South Yorkshire (national coverage available)
-					</p>
+        <div style="margin-top:18px;color:var(--muted);font-size:14px">
+            <strong>Fast pickups</strong> — Local to national with competitive rates.
+        </div>
+    </div>
 
-					<div style="margin-top: 12px">
-						<a class="btn btn-primary" href="tel:07711926842">Call now</a>
-					</div>
-				</aside>
-			</section>
+    <div class="hero-right">
+        <div class="bg" style="
+            background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png');
+            width:100%;height:100%;
+        "></div>
+    </div>
+</section>
 
-			<footer>
-				&copy; <span id="year"></span> BikesInAVan • Professional motorcycle
-				transport • <span class="muted">All rights reserved</span>
-			</footer>
-		</div>
+<section id="services" class="services">
+    <div class="card">
+        <h3>Door-to-door transport</h3>
+        <p>Collection and delivery from home, workshop or showroom.</p>
+    </div>
+    <div class="card">
+        <h3>Enclosed, insured transit</h3>
+        <p>All bikes travel inside a secure enclosed van.</p>
+    </div>
+    <div class="card">
+        <h3>Experienced handling</h3>
+        <p>Suitable for classics, modern sportbikes, and tourers.</p>
+    </div>
+</section>
 
-		<script>
-			document.getElementById('year').textContent = new Date().getFullYear();
-		</script>
-	</body>
+<section class="about">
+    <img src="images/driver.jpg" alt="Driver portrait"/>
+    <div class="txt">
+        <h3>About BikesInAVan</h3>
+        <p class="muted">30 years of motorbike ownership and professional driving experience.</p>
+    </div>
+</section>
+
+<!-- ====================== QUOTE CALCULATOR SECTION ======================= -->
+<section id="contact" class="contact">
+    <h3>Instant Quote Calculator</h3>
+
+    <div class="calc-card">
+        <label for="addrB">Collection address</label>
+        <input id="addrB" type="text" placeholder="e.g. BB1 2AB, Blackburn" />
+
+        <label for="addrC">Delivery address</label>
+        <input id="addrC" type="text" placeholder="e.g. DN4 5PJ, Doncaster" />
+
+        <button id="calcBtn" class="btn btn-primary" style="margin-top:15px">
+            Calculate distance & quote
+        </button>
+
+        <div id="output"></div>
+    </div>
+
+    <aside style="padding:18px;background:var(--card);border-radius:10px;margin-top:20px">
+        <h4 style="margin-top:0">Contact</h4>
+        <p class="muted">Phone: <strong>07711926842</strong></p>
+        <p class="muted">Email: <strong>info@bikesinavan.co.uk</strong></p>
+        <p class="muted">Based in South Yorkshire — national coverage.</p>
+
+        <a class="btn btn-primary" href="tel:07711926842" style="margin-top:12px">Call now</a>
+    </aside>
+</section>
+
+<footer>
+    &copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport •
+    <span class="muted">All rights reserved</span>
+</footer>
+
+</div>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+<!-- Google Maps API -->
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places&callback=initApp" async defer></script>
+
+<script>
+let mapsLoaded = false;
+function initApp() { mapsLoaded = true; }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('calcBtn').addEventListener('click', onCalculate);
+});
+
+async function onCalculate() {
+    const a = "DN7 6LX, Hatfield, Doncaster";  // Home base
+    const b = document.getElementById('addrB').value.trim();
+    const c = document.getElementById('addrC').value.trim();
+    const d = "DN7 6LX, Hatfield, Doncaster";  // Return home
+
+    const output = document.getElementById('output');
+    output.innerHTML = "";
+
+    if (!b || !c) {
+        output.innerHTML = "<div class='error'>Please fill both addresses.</div>";
+        return;
+    }
+    if (!mapsLoaded) {
+        output.innerHTML = "<div class='error'>Google Maps API not loaded.</div>";
+        return;
+    }
+
+    const service = new google.maps.DistanceMatrixService();
+    const origins = [a, b, c, d];
+    const destinations = [a, b, c, d];
+
+    output.innerHTML = "<div class='small'>Calculating…</div>";
+
+    service.getDistanceMatrix({
+        origins,
+        destinations,
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC
+    }, (response, status) => {
+
+        if (status !== "OK") {
+            output.innerHTML = `<div class='error'>Error: ${status}</div>`;
+            return;
+        }
+
+        const rows = response.rows;
+
+        /* ------------------ Calculate Round Trip A→B→C→A ------------------ */
+        let meters = 0;
+        let seconds = 0;
+
+        function addLeg(i,j) {
+            const el = rows[i].elements[j];
+            if (el && el.status === "OK") {
+                meters += el.distance.value;
+                seconds += el.duration.value;
+            }
+        }
+
+        addLeg(0,1);
+        addLeg(1,2);
+        addLeg(2,0);
+
+        const miles = (meters / 1609.34).toFixed(1);
+        const mins  = Math.round(seconds / 60);
+
+        /* ------------------ Price calculation ------------------ */
+        let quote = 0;
+        let rateType = "Long distance";
+
+        if (miles < 50 && mins < 60) {
+            quote = 110;
+            rateType = "Local rate";
+        } else {
+            quote = (miles * 1.2).toFixed(0);
+        }
+
+        output.innerHTML = `
+            <p><strong>Total mileage (A → B → C → A):</strong> ${miles} miles</p>
+            <p><strong>Total time:</strong> ${mins} minutes</p>
+            <p><strong>${rateType}:</strong> £${quote}</p>
+        `;
+    });
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, m =>
+        ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])
+    );
+}
+</script>
+
+</body>
 </html>
