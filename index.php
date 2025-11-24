@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
         'bikeModel'  => htmlspecialchars($_POST['bikeModel'] ?? '')
     ];
 
-    // Email quote
-    $to = 'info@bikesinavan.co.uk';  
+    // Email notification
+    $to = 'info@bikesinavan.co.uk';
     $subject = 'New BikesInAVan Quote Submitted';
     $message = "
 A new motorcycle transport quote has been submitted:
@@ -44,12 +44,9 @@ Bike: {$submitted_quote['bikeModel']}
 Email: {$submitted_quote['email']}
 Quote: £{$submitted_quote['quote']}
 ";
-
     $headers = "From: no-reply@bikesinavan.co.uk\r\n";
     $headers .= "Reply-To: {$submitted_quote['email']}\r\n";
-    $sent = mail($to, $subject, $message, $headers);
-    if (!$sent) { error_log("Mail failed to send to $to"); } 
-    else { error_log("Mail sent successfully to $to"); }
+    mail($to, $subject, $message, $headers);
 
     // Save to database
     $stmt = $pdo->prepare("INSERT INTO quotes 
@@ -84,26 +81,28 @@ header { display:flex; justify-content:space-between; align-items:center; margin
 .brand h1, .brand p { margin:0; color:#fff; }
 .muted { color:#aaa; }
 
-/* Hero section */
-.hero { display:flex; justify-content:space-between; align-items:center; background:#111; padding:40px 20px; border-radius:10px; margin-bottom:20px; }
+.hero { display:flex; justify-content:space-between; align-items:flex-start; background:#111; padding:40px 20px; border-radius:10px; margin-bottom:20px; }
 .hero-left { flex:1; margin-right:20px; }
 .hero-left h2 { font-size:2em; margin-bottom:12px; }
 .hero-left .eyebrow { font-weight:600; margin-bottom:6px; color:#4CAF50; }
 .hero-left p { color:#ccc; margin-bottom:20px; }
-.hero-left .btn { display:inline-block; margin-right:10px; padding:10px 20px; font-weight:600; border-radius:6px; background:#4CAF50; color:#fff; cursor:pointer; }
-.hero-left .btn-ghost { background:transparent; border:2px solid #4CAF50; color:#4CAF50; }
 .hero-right { flex:1; }
 .hero-right .bg { width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px; }
 
-/* Calculator card */
 .calc-card { background:#111; padding:18px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.5); margin-top:20px; }
 .calc-card label { display:block; margin-top:10px; font-weight:600; }
 .calc-card input { width:100%; padding:10px; margin-top:6px; box-sizing:border-box; border-radius:6px; border:1px solid #555; background:#111; color:#fff; }
 .calc-card button { margin-top:12px; padding:10px 14px; cursor:pointer; background:#4CAF50; border:none; color:#fff; font-weight:600; }
 .calc-card button:hover { background:#45a049; }
 #output { margin-top:20px; }
-.submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-top:20px; }
+.submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-bottom:20px; }
 .error { color:#f55; font-weight:600; margin-top:10px; }
+
+@media (max-width: 768px) {
+    .hero { flex-direction: column; padding: 20px 10px; }
+    .hero-left, .hero-right { flex: 1 1 100%; margin: 0 0 20px 0; }
+    .hero-right .bg { height: 200px; }
+}
 </style>
 </head>
 <body>
@@ -124,13 +123,25 @@ header { display:flex; justify-content:space-between; align-items:center; margin
     </div>
 </header>
 
+<?php if ($submitted_quote): ?>
+    <div class="submitted-quote">
+        <h4>Your Submitted Quote</h4>
+        <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
+        <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
+        <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
+        <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
+        <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
+        <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
+        <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
+    </div>
+<?php endif; ?>
+
 <section class="hero">
     <div class="hero-left">
         <div class="eyebrow">Trusted motorcycle transport</div>
         <h2>We move cherished bikes safely — door-to-door across the UK</h2>
         <p class="muted">Professional, insured motorcycle transport in a secure, enclosed van. Perfect for classics, moderns and everything in between.</p>
 
-        <!-- Quote Form inside hero-left -->
         <div class="calc-card">
             <h3>Get an Instant Quote</h3>
             <label for="addrB">Collection Address</label>
@@ -154,19 +165,6 @@ header { display:flex; justify-content:space-between; align-items:center; margin
     </div>
 </section>
 
-<?php if ($submitted_quote): ?>
-    <div class="submitted-quote">
-        <h4>Your Submitted Quote</h4>
-        <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
-        <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
-        <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
-        <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
-        <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
-        <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
-        <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
-    </div>
-<?php endif; ?>
-
 <footer style="margin-top:40px;">
     &copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport •
     <span class="muted">All rights reserved</span>
@@ -178,26 +176,11 @@ header { display:flex; justify-content:space-between; align-items:center; margin
 document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
-<!-- Google Maps API with Places library -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initApp" async defer></script>
 
 <script>
 let mapsLoaded = false;
-
-function initApp(){
-    mapsLoaded = true;
-    initAutocomplete();
-}
-
-// Initialize address autocomplete
-function initAutocomplete() {
-    if (!mapsLoaded) return;
-    const collectionInput = document.getElementById('addrB');
-    const deliveryInput = document.getElementById('addrC');
-
-    new google.maps.places.Autocomplete(collectionInput, { types:['geocode'], componentRestrictions:{country:'gb'} });
-    new google.maps.places.Autocomplete(deliveryInput, { types:['geocode'], componentRestrictions:{country:'gb'} });
-}
+function initApp(){ mapsLoaded = true; }
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('calcBtn').addEventListener('click', onCalculate);
@@ -234,7 +217,6 @@ function onCalculate() {
 
         output.innerHTML=`<p><strong>Your quote:</strong> £${quote}</p>`;
 
-        // Auto-submit to database
         const form=document.createElement('form'); form.method='POST'; form.style.display='none';
         ['collection','delivery','miles','minutes','quoteValue','customerEmail','bikeModel'].forEach(name=>{
             const input=document.createElement('input'); input.type='hidden'; input.name=name;
@@ -243,6 +225,12 @@ function onCalculate() {
         });
         document.body.appendChild(form); form.submit();
     });
+
+    if(window.google && google.maps && google.maps.places){
+        ['addrB','addrC'].forEach(id=>{
+            new google.maps.places.Autocomplete(document.getElementById(id));
+        });
+    }
 }
 </script>
 </body>
