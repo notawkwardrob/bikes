@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
     ];
 
     // Email notification
-    $to = 'info@bikesinavan.co.uk';  
+    $to = 'info@bikesinavan.co.uk';
     $subject = 'New BikesInAVan Quote Submitted';
     $message = "
 A new motorcycle transport quote has been submitted:
@@ -80,14 +80,28 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
 .logo img { height:50px; margin-right:10px; vertical-align:middle; }
 .brand h1, .brand p { margin:0; color:#fff; }
 .muted { color:#aaa; }
-.calc-card, .hero-left p, .hero-left h2 { margin:0; }
 
-/* Quote box */
+/* Hero section */
+.hero { display:flex; flex-direction:column; background:#111; padding:20px; border-radius:10px; margin-bottom:20px; }
+.hero-left { width:100%; }
+.hero-left h2 { font-size:1.6em; margin-bottom:12px; }
+.hero-left .eyebrow { font-weight:600; margin-bottom:6px; color:#4CAF50; }
+.hero-left p { color:#ccc; margin-bottom:20px; }
+
+/* Calculator card */
+.calc-card { background:#111; padding:18px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.5); margin-top:10px; }
+.calc-card label { display:block; margin-top:10px; font-weight:600; }
+.calc-card input { width:100%; padding:10px; margin-top:6px; box-sizing:border-box; border-radius:6px; border:1px solid #555; background:#111; color:#fff; }
+.calc-card button { margin-top:12px; padding:10px 14px; cursor:pointer; background:#4CAF50; border:none; color:#fff; font-weight:600; }
+.calc-card button:hover { background:#45a049; }
+#output { margin-top:20px; }
 .submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-bottom:20px; }
+.error { color:#f55; font-weight:600; margin-top:10px; }
 
 /* Responsive */
 @media (min-width: 600px){
     .hero { flex-direction:row; justify-content:space-between; }
+    .hero-left, .hero-right { width:48%; }
 }
 </style>
 </head>
@@ -109,23 +123,24 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
     </div>
 </header>
 
-<?php if ($submitted_quote): ?>
-<div class="submitted-quote">
-    <h4>Your Quote</h4>
-    <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
-    <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
-    <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
-    <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
-    <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
-</div>
-<?php else: ?>
-<!-- Only display the form if no quote has been submitted -->
 <section class="hero">
     <div class="hero-left">
         <div class="eyebrow">Trusted motorcycle transport</div>
         <h2>We move cherished bikes safely — door-to-door across the UK</h2>
         <p class="muted">Professional, insured motorcycle transport in a secure, enclosed van. Perfect for classics, moderns and everything in between.</p>
 
+        <!-- Show quote at top if submitted -->
+        <?php if ($submitted_quote): ?>
+            <div class="submitted-quote">
+                <h4>Your Quote</h4>
+                <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
+                <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
+                <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
+                <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
+                <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
+            </div>
+        <?php else: ?>
+        <!-- Only show form if no quote submitted -->
         <div class="calc-card">
             <h3>Get an Instant Quote</h3>
             <label for="addrB">Collection Address</label>
@@ -139,9 +154,12 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
             <button id="calcBtn">Calculate distance & quote</button>
             <div id="output"></div>
         </div>
+        <?php endif; ?>
+    </div>
+    <div class="hero-right">
+        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png'); width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px;"></div>
     </div>
 </section>
-<?php endif; ?>
 
 <footer style="margin-top:20px;">&copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport • <span class="muted">All rights reserved</span></footer>
 </div>
