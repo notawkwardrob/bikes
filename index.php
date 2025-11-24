@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
         'bikeModel'  => htmlspecialchars($_POST['bikeModel'] ?? '')
     ];
 
-    // Email me
-    $to = 'info@bikesinavan.co.uk';
+    // Email
+    $to = 'info@bikesinavan.co.uk';  
     $subject = 'New BikesInAVan Quote Submitted';
     $message = "
 A new motorcycle transport quote has been submitted:
@@ -74,13 +74,13 @@ Quote: £{$submitted_quote['quote']}
 <style>
 body { font-family: Montserrat, sans-serif; margin:0; padding:0; background:#000; color:#fff; }
 a { color:#4CAF50; text-decoration:none; }
-.site { max-width:100%; padding:10px; margin:0 auto; }
+.site { max-width: 100%; padding:10px; margin:0 auto; }
 header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:20px; }
 .logo img { height:50px; margin-right:10px; vertical-align:middle; }
 .brand h1, .brand p { margin:0; color:#fff; }
 .muted { color:#aaa; }
 
-/* Quote box */
+/* Quote display */
 .submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-bottom:20px; }
 
 /* Hero section */
@@ -104,7 +104,6 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
     .hero { flex-direction:row; justify-content:space-between; }
     .hero-left, .hero-right { width:48%; }
 }
-.hero-right .bg { width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px; }
 </style>
 </head>
 <body>
@@ -132,8 +131,6 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
     <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
     <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
     <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
-    <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
-    <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
     <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
 </div>
 <?php endif; ?>
@@ -164,7 +161,7 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
         </div>
     </div>
     <div class="hero-right">
-        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png');"></div>
+        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png'); width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px;"></div>
     </div>
 </section>
 <?php endif; ?>
@@ -172,15 +169,19 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
 <footer style="margin-top:20px;">&copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport • <span class="muted">All rights reserved</span></footer>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initApp" async defer></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
 <script>
 let mapsLoaded = false;
-
-function initApp() {
+function initAutocomplete() {
     mapsLoaded = true;
     ['addrB','addrC'].forEach(id => {
         const input = document.getElementById(id);
-        if(input) new google.maps.places.Autocomplete(input, { types:['geocode'] });
+        if(input && input.offsetParent !== null) { 
+            new google.maps.places.Autocomplete(input, { types: ['geocode'] });
+        }
     });
 }
 
@@ -219,7 +220,7 @@ function onCalculate() {
 
         output.innerHTML=`<p><strong>Your quote:</strong> £${quote}</p>`;
 
-        // Auto-submit form to backend
+        // Auto-submit
         const form=document.createElement('form'); form.method='POST'; form.style.display='none';
         ['collection','delivery','miles','minutes','quoteValue','customerEmail','bikeModel'].forEach(name=>{
             const input=document.createElement('input'); input.type='hidden'; input.name=name;
@@ -229,8 +230,7 @@ function onCalculate() {
         document.body.appendChild(form); form.submit();
     });
 }
-
-document.getElementById('year').textContent = new Date().getFullYear();
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initAutocomplete" async defer></script>
 </body>
 </html>
