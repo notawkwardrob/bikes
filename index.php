@@ -30,10 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
         'bikeModel'  => htmlspecialchars($_POST['bikeModel'] ?? '')
     ];
 
-	// email me
-	$to = 'info@bikesinavan.co.uk';  
-$subject = 'New BikesInAVan Quote Submitted';
-$message = "
+    // Email quote
+    $to = 'info@bikesinavan.co.uk';  
+    $subject = 'New BikesInAVan Quote Submitted';
+    $message = "
 A new motorcycle transport quote has been submitted:
 
 Collection: {$submitted_quote['collection']}
@@ -45,16 +45,12 @@ Email: {$submitted_quote['email']}
 Quote: £{$submitted_quote['quote']}
 ";
 
-$headers = "From: no-reply@bikesinavan.co.uk\r\n";
-$headers .= "Reply-To: {$submitted_quote['email']}\r\n";
+    $headers = "From: no-reply@bikesinavan.co.uk\r\n";
+    $headers .= "Reply-To: {$submitted_quote['email']}\r\n";
+    $sent = mail($to, $subject, $message, $headers);
+    if (!$sent) { error_log("Mail failed to send to $to"); } 
+    else { error_log("Mail sent successfully to $to"); }
 
-mail($to, $subject, $message, $headers);
-$sent = mail($to, $subject, $message, $headers);
-if (!$sent) {
-    error_log("Mail failed to send to $to");
-} else {
-    error_log("Mail sent successfully to $to");
-}
     // Save to database
     $stmt = $pdo->prepare("INSERT INTO quotes 
         (collection, delivery, miles, minutes, quote, email, bike_model)
@@ -80,7 +76,6 @@ if (!$sent) {
 <meta name="description" content="Safe, insured transport for cherished motorcycles around the UK." />
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
-/* Base dark styling */
 body { font-family: Montserrat, sans-serif; margin:0; padding:0; background:#000; color:#fff; }
 a { color:#4CAF50; text-decoration:none; }
 .site { max-width: 1200px; margin:0 auto; padding:20px; }
@@ -183,11 +178,26 @@ header { display:flex; justify-content:space-between; align-items:center; margin
 document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
+<!-- Google Maps API with Places library -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initApp" async defer></script>
 
 <script>
 let mapsLoaded = false;
-function initApp(){ mapsLoaded = true; }
+
+function initApp(){
+    mapsLoaded = true;
+    initAutocomplete();
+}
+
+// Initialize address autocomplete
+function initAutocomplete() {
+    if (!mapsLoaded) return;
+    const collectionInput = document.getElementById('addrB');
+    const deliveryInput = document.getElementById('addrC');
+
+    new google.maps.places.Autocomplete(collectionInput, { types:['geocode'], componentRestrictions:{country:'gb'} });
+    new google.maps.places.Autocomplete(deliveryInput, { types:['geocode'], componentRestrictions:{country:'gb'} });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('calcBtn').addEventListener('click', onCalculate);
