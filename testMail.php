@@ -1,35 +1,43 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// mailtest.php
+// Simple test for sending an email from your server
 
-// Manual includes (no Composer)
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
+// Recipient email (your address)
+$to = 'coxy911@gmail.com';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+// Email subject
+$subject = 'Test BikesInAVan Quote Email';
 
-$mail = new PHPMailer(true);
+// Sample quote data
+$collection = 'BB1 2AB, Blackburn';
+$delivery   = 'DN4 5PJ, Doncaster';
+$miles      = '45';
+$minutes    = '55';
+$quote      = '110';
+$bikeModel  = 'Honda CBR600RR';
+$customerEmail = 'customer@example.com';
 
-try {
-    $mail->isSMTP();
-    $mail->Host       = 'mail.bikesinavan.co.uk';
-    $mail->SMTPAuth   = true;
-    $mail->Username   = 'info@bikesinavan.co.uk';
-    $mail->Password   = 'emailPassword';
-    $mail->SMTPSecure = 'tls';   // use 'ssl' if port 465
-    $mail->Port       = 587;     // use 465 if SSL
+// Email body
+$message = "
+A new quote has been submitted:
 
-    $mail->setFrom('info@bikesinavan.co.uk', 'BikesInAVan');
-    $mail->addAddress('youremail@example.com');  // change to your actual email
+Collection: $collection
+Delivery: $delivery
+Distance: $miles miles
+Time: $minutes minutes
+Bike: $bikeModel
+Customer Email: $customerEmail
+Quote: £$quote
+";
 
-    $mail->Subject = 'Test email';
-    $mail->Body    = 'This is a test email from BikesInAVan quote page.';
-    $mail->send();
+// Email headers
+$headers = "From: info@bikesinavan.co.uk\r\n";
+$headers .= "Reply-To: $customerEmail\r\n";
 
-    echo "Email sent successfully!";
-} catch (Exception $e) {
-    echo "Mailer Error: " . $mail->ErrorInfo;
+// Send the email
+if(mail($to, $subject, $message, $headers)){
+    echo "Test email sent successfully to $to!";
+} else {
+    echo "Failed to send test email. Check your server email settings.";
 }
+?>
