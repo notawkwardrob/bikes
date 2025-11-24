@@ -203,7 +203,7 @@ document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
 <!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places&callback=initApp" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initApp" async defer></script>
 
 <script>
 let mapsLoaded = false;
