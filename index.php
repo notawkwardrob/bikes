@@ -2,6 +2,19 @@
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+
+$submitted_quote = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
+    // Sanitize values
+    $submitted_quote = [
+        'collection' => htmlspecialchars($_POST['collection'] ?? ''),
+        'delivery'   => htmlspecialchars($_POST['delivery'] ?? ''),
+        'miles'      => htmlspecialchars($_POST['miles'] ?? ''),
+        'minutes'    => htmlspecialchars($_POST['minutes'] ?? ''),
+        'quote'      => htmlspecialchars($_POST['quoteValue'] ?? '')
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,6 +65,13 @@ header("Pragma: no-cache");
         }
         .small { font-size: 0.9em; color: #666; }
         .error { color: #b00; font-weight: 600; margin-top: 10px; }
+        .submitted-quote {
+            border: 2px solid #4CAF50;
+            padding: 18px;
+            border-radius: 10px;
+            background: #f7fff7;
+            margin-top: 20px;
+        }
     </style>
 </head>
 
@@ -139,7 +159,27 @@ header("Pragma: no-cache");
         </button>
 
         <div id="output"></div>
+
+        <form id="returnQuoteForm" method="POST" style="display:none;margin-top:20px;">
+            <input type="hidden" name="collection" id="formCollection">
+            <input type="hidden" name="delivery" id="formDelivery">
+            <input type="hidden" name="miles" id="formMiles">
+            <input type="hidden" name="minutes" id="formMinutes">
+            <input type="hidden" name="quoteValue" id="formQuote">
+            <button class="btn btn-primary">Send me this quote</button>
+        </form>
     </div>
+
+    <?php if ($submitted_quote): ?>
+        <div class="submitted-quote">
+            <h4>Your Submitted Quote</h4>
+            <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
+            <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
+            <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
+            <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
+            <p><strong>Your quote:</strong> £<?= $submitted_quote['quote'] ?></p>
+        </div>
+    <?php endif; ?>
 
     <aside style="padding:18px;background:var(--card);border-radius:10px;margin-top:20px">
         <h4 style="margin-top:0">Contact</h4>
@@ -245,7 +285,16 @@ async function onCalculate() {
             <p><strong>Total mileage (A → B → C → A):</strong> ${miles} miles</p>
             <p><strong>Total time:</strong> ${mins} minutes</p>
             <p><strong>${rateType}:</strong> £${quote}</p>
+            <p class='small'>Click the button below to send this quote back to the server.</p>
         `;
+
+        // Populate and show return-quote form
+        document.getElementById('formCollection').value = b;
+        document.getElementById('formDelivery').value = c;
+        document.getElementById('formMiles').value = miles;
+        document.getElementById('formMinutes').value = mins;
+        document.getElementById('formQuote').value = quote;
+        document.getElementById('returnQuoteForm').style.display = "block";
     });
 }
 
