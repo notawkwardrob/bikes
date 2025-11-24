@@ -31,11 +31,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
     ];
 
 	// email me
-	$to = 'coxy911@gmail.com';  
-$subject = 'New BikesInAVan Quote Submitted';
-$message = "
-A new motorcycle transport quote has been submitted:
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
+require 'PHPMailer/src/Exception.php';
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+
+$mail = new PHPMailer(true);
+try {
+    $mail->isSMTP();
+    $mail->Host = 'mail.bikesinavan.co.uk';
+    $mail->SMTPAuth = true;
+    $mail->Username = 'you@bikesinavan.co.uk';
+    $mail->Password = 'emailPassword';
+    $mail->SMTPSecure = 'tls';
+    $mail->Port = 465;
+
+    $mail->setFrom('info@bikesinavan.co.uk', 'BikesInAVan');
+    $mail->addAddress('coxy911@gmail.com');
+
+    $mail->Subject = 'New BikesInAVan Quote Submitted';
+    $mail->Body = "
 Collection: {$submitted_quote['collection']}
 Delivery: {$submitted_quote['delivery']}
 Distance: {$submitted_quote['miles']} miles
@@ -45,14 +62,10 @@ Email: {$submitted_quote['email']}
 Quote: £{$submitted_quote['quote']}
 ";
 
-$headers = "From: no-reply@bikesinavan.co.uk\r\n";
-$headers .= "Reply-To: {$submitted_quote['email']}\r\n";
-
-$sent = mail($to, $subject, $message, $headers);
-if (!$sent) {
-    error_log("Mail failed to send to $to");
-} else {
-    error_log("Mail sent successfully to $to");
+    $mail->send();
+    error_log('Quote email sent successfully');
+} catch (Exception $e) {
+    error_log("Mailer Error: {$mail->ErrorInfo}");
 }
     // Save to database
     $stmt = $pdo->prepare("INSERT INTO quotes 
