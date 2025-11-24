@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
         'bikeModel'  => htmlspecialchars($_POST['bikeModel'] ?? '')
     ];
 
-    // Email notification
+    // Email me
     $to = 'info@bikesinavan.co.uk';
     $subject = 'New BikesInAVan Quote Submitted';
     $message = "
@@ -44,7 +44,6 @@ Bike: {$submitted_quote['bikeModel']}
 Email: {$submitted_quote['email']}
 Quote: £{$submitted_quote['quote']}
 ";
-
     $headers = "From: no-reply@bikesinavan.co.uk\r\n";
     $headers .= "Reply-To: {$submitted_quote['email']}\r\n";
     mail($to, $subject, $message, $headers);
@@ -75,11 +74,14 @@ Quote: £{$submitted_quote['quote']}
 <style>
 body { font-family: Montserrat, sans-serif; margin:0; padding:0; background:#000; color:#fff; }
 a { color:#4CAF50; text-decoration:none; }
-.site { max-width: 100%; padding:10px; margin:0 auto; }
+.site { max-width:100%; padding:10px; margin:0 auto; }
 header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:20px; }
 .logo img { height:50px; margin-right:10px; vertical-align:middle; }
 .brand h1, .brand p { margin:0; color:#fff; }
 .muted { color:#aaa; }
+
+/* Quote box */
+.submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-bottom:20px; }
 
 /* Hero section */
 .hero { display:flex; flex-direction:column; background:#111; padding:20px; border-radius:10px; margin-bottom:20px; }
@@ -95,7 +97,6 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
 .calc-card button { margin-top:12px; padding:10px 14px; cursor:pointer; background:#4CAF50; border:none; color:#fff; font-weight:600; }
 .calc-card button:hover { background:#45a049; }
 #output { margin-top:20px; }
-.submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-bottom:20px; }
 .error { color:#f55; font-weight:600; margin-top:10px; }
 
 /* Responsive */
@@ -103,6 +104,7 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
     .hero { flex-direction:row; justify-content:space-between; }
     .hero-left, .hero-right { width:48%; }
 }
+.hero-right .bg { width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px; }
 </style>
 </head>
 <body>
@@ -123,43 +125,49 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
     </div>
 </header>
 
+<?php if ($submitted_quote): ?>
+<div class="submitted-quote">
+    <h4>Your Quote</h4>
+    <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
+    <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
+    <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
+    <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
+    <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
+    <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
+    <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
+</div>
+<?php endif; ?>
+
+<?php if (!$submitted_quote): ?>
 <section class="hero">
     <div class="hero-left">
         <div class="eyebrow">Trusted motorcycle transport</div>
         <h2>We move cherished bikes safely — door-to-door across the UK</h2>
         <p class="muted">Professional, insured motorcycle transport in a secure, enclosed van. Perfect for classics, moderns and everything in between.</p>
 
-        <!-- Show quote at top if submitted -->
-        <?php if ($submitted_quote): ?>
-            <div class="submitted-quote">
-                <h4>Your Quote</h4>
-                <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
-                <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
-                <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
-                <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
-                <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
-            </div>
-        <?php else: ?>
-        <!-- Only show form if no quote submitted -->
         <div class="calc-card">
             <h3>Get an Instant Quote</h3>
             <label for="addrB">Collection Address</label>
             <input id="addrB" type="text" placeholder="e.g. BB1 2AB, Blackburn" autocomplete="off"/>
+
             <label for="addrC">Delivery Address</label>
             <input id="addrC" type="text" placeholder="e.g. DN4 5PJ, Doncaster" autocomplete="off"/>
+
             <label for="customerEmail">Email</label>
             <input type="email" id="customerEmail" placeholder="your@email.com"/>
+
             <label for="bikeModel">Bike Make/Model</label>
             <input type="text" id="bikeModel" placeholder="Make and model of bike"/>
+
             <button id="calcBtn">Calculate distance & quote</button>
             <div id="output"></div>
         </div>
-        <?php endif; ?>
     </div>
     <div class="hero-right">
-        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png'); width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px;"></div>
+        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png');"></div>
     </div>
 </section>
+<?php endif; ?>
 
 <footer style="margin-top:20px;">&copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport • <span class="muted">All rights reserved</span></footer>
 </div>
@@ -167,6 +175,7 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initApp" async defer></script>
 <script>
 let mapsLoaded = false;
+
 function initApp() {
     mapsLoaded = true;
     ['addrB','addrC'].forEach(id => {
@@ -210,7 +219,7 @@ function onCalculate() {
 
         output.innerHTML=`<p><strong>Your quote:</strong> £${quote}</p>`;
 
-        // Auto-submit to database
+        // Auto-submit form to backend
         const form=document.createElement('form'); form.method='POST'; form.style.display='none';
         ['collection','delivery','miles','minutes','quoteValue','customerEmail','bikeModel'].forEach(name=>{
             const input=document.createElement('input'); input.type='hidden'; input.name=name;
