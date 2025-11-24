@@ -18,7 +18,7 @@ try {
     die("Database connection failed: " . $e->getMessage());
 }
 
-// Optional: handle display of last submitted quote
+// Handle submitted quote
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
     $submitted_quote = [
         'collection' => htmlspecialchars($_POST['collection'] ?? ''),
@@ -54,22 +54,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
 <title>BikesInAVan — Motorcycle Transport</title>
 <meta name="description" content="Safe, insured transport for cherished motorcycles around the UK." />
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet"/>
-<link href="style.css" rel="stylesheet"/>
 <style>
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f7f7f7; }
-.site { max-width: 900px; margin: 0 auto; padding:20px; }
+/* Base dark styling */
+body { font-family: Montserrat, sans-serif; margin:0; padding:0; background:#000; color:#fff; }
+a { color:#4CAF50; text-decoration:none; }
+.site { max-width: 1200px; margin:0 auto; padding:20px; }
 header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
 .logo img { height:50px; margin-right:10px; vertical-align:middle; }
-.calc-card { background:#fff; padding:18px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.12); margin-top:20px; }
+.brand h1, .brand p { margin:0; color:#fff; }
+.muted { color:#aaa; }
+
+/* Hero section */
+.hero { display:flex; justify-content:space-between; align-items:center; background:#111; padding:40px 20px; border-radius:10px; margin-bottom:20px; }
+.hero-left { flex:1; margin-right:20px; }
+.hero-left h2 { font-size:2em; margin-bottom:12px; }
+.hero-left .eyebrow { font-weight:600; margin-bottom:6px; color:#4CAF50; }
+.hero-left p { color:#ccc; margin-bottom:20px; }
+.hero-left .btn { display:inline-block; margin-right:10px; padding:10px 20px; font-weight:600; border-radius:6px; background:#4CAF50; color:#fff; cursor:pointer; }
+.hero-left .btn-ghost { background:transparent; border:2px solid #4CAF50; color:#4CAF50; }
+.hero-right { flex:1; }
+.hero-right .bg { width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px; }
+
+/* Calculator card */
+.calc-card { background:#111; padding:18px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.5); margin-top:20px; }
 .calc-card label { display:block; margin-top:10px; font-weight:600; }
-.calc-card input { width:100%; padding:10px; margin-top:6px; box-sizing:border-box; border-radius:6px; border:1px solid #ccc; }
-.calc-card button { margin-top:12px; padding:10px 14px; cursor:pointer; }
-#output table { margin-top:16px; border-collapse: collapse; width:100%; background:white; }
-#output th, #output td { border:1px solid #ddd; padding:8px; text-align:center; }
-#output th { background:#f3f3f3; }
-.small { font-size:0.9em; color:#666; }
-.error { color:#b00; font-weight:600; margin-top:10px; }
-.submitted-quote { border:2px solid #4CAF50; padding:18px; border-radius:10px; background:#f7fff7; margin-top:20px; }
+.calc-card input { width:100%; padding:10px; margin-top:6px; box-sizing:border-box; border-radius:6px; border:1px solid #555; background:#111; color:#fff; }
+.calc-card button { margin-top:12px; padding:10px 14px; cursor:pointer; background:#4CAF50; border:none; color:#fff; font-weight:600; }
+.calc-card button:hover { background:#45a049; }
+#output { margin-top:20px; }
+.submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-top:20px; }
+.error { color:#f55; font-weight:600; margin-top:10px; }
 </style>
 </head>
 <body>
@@ -91,38 +105,47 @@ header { display:flex; justify-content:space-between; align-items:center; margin
 </header>
 
 <section class="hero">
-    <div class="calc-card">
-        <h2>Get an Instant Quote</h2>
-        <label for="addrB">Collection Address</label>
-        <input id="addrB" type="text" placeholder="e.g. BB1 2AB, Blackburn" />
+    <div class="hero-left">
+        <div class="eyebrow">Trusted motorcycle transport</div>
+        <h2>We move cherished bikes safely — door-to-door across the UK</h2>
+        <p class="muted">Professional, insured motorcycle transport in a secure, enclosed van. Perfect for classics, moderns and everything in between.</p>
 
-        <label for="addrC">Delivery Address</label>
-        <input id="addrC" type="text" placeholder="e.g. DN4 5PJ, Doncaster" />
+        <!-- Quote Form inside hero-left -->
+        <div class="calc-card">
+            <h3>Get an Instant Quote</h3>
+            <label for="addrB">Collection Address</label>
+            <input id="addrB" type="text" placeholder="e.g. BB1 2AB, Blackburn" />
 
-        <label for="customerEmail">Email</label>
-        <input type="email" id="customerEmail" placeholder="your@email.com" required/>
+            <label for="addrC">Delivery Address</label>
+            <input id="addrC" type="text" placeholder="e.g. DN4 5PJ, Doncaster" />
 
-        <label for="bikeModel">Bike Make/Model</label>
-        <input type="text" id="bikeModel" placeholder="Make and model of bike"/>
+            <label for="customerEmail">Email</label>
+            <input type="email" id="customerEmail" placeholder="your@email.com" required/>
 
-        <button id="calcBtn" class="btn btn-primary">Calculate distance & quote</button>
+            <label for="bikeModel">Bike Make/Model</label>
+            <input type="text" id="bikeModel" placeholder="Make and model of bike"/>
 
-        <div id="output"></div>
-    </div>
-
-    <?php if ($submitted_quote): ?>
-        <div class="submitted-quote">
-            <h4>Your Submitted Quote</h4>
-            <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
-            <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
-            <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
-            <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
-            <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
-            <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
-            <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
+            <button id="calcBtn">Calculate distance & quote</button>
+            <div id="output"></div>
         </div>
-    <?php endif; ?>
+    </div>
+    <div class="hero-right">
+        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png');"></div>
+    </div>
 </section>
+
+<?php if ($submitted_quote): ?>
+    <div class="submitted-quote">
+        <h4>Your Submitted Quote</h4>
+        <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
+        <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
+        <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
+        <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
+        <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
+        <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
+        <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
+    </div>
+<?php endif; ?>
 
 <footer style="margin-top:40px;">
     &copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport •
@@ -139,80 +162,51 @@ document.getElementById('year').textContent = new Date().getFullYear();
 
 <script>
 let mapsLoaded = false;
-function initApp() { mapsLoaded = true; }
+function initApp(){ mapsLoaded = true; }
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('calcBtn').addEventListener('click', onCalculate);
 });
 
 function onCalculate() {
-    const a = "DN7 6LX, Hatfield, Doncaster";
-    const b = document.getElementById('addrB').value.trim();
-    const c = document.getElementById('addrC').value.trim();
-    const d = "DN7 6LX, Hatfield, Doncaster";
+    const a="DN7 6LX, Hatfield, Doncaster";
+    const b=document.getElementById('addrB').value.trim();
+    const c=document.getElementById('addrC').value.trim();
+    const d="DN7 6LX, Hatfield, Doncaster";
+    const email=document.getElementById('customerEmail').value.trim();
+    const bikeModel=document.getElementById('bikeModel').value.trim();
 
-    const email = document.getElementById('customerEmail').value.trim();
-    const bikeModel = document.getElementById('bikeModel').value.trim();
+    const output=document.getElementById('output'); output.innerHTML="";
+    if(!b||!c){ output.innerHTML="<div class='error'>Please fill both addresses.</div>"; return; }
+    if(!email){ output.innerHTML="<div class='error'>Please enter your email.</div>"; return; }
+    if(!mapsLoaded){ output.innerHTML="<div class='error'>Google Maps API not loaded.</div>"; return; }
 
-    const output = document.getElementById('output');
-    output.innerHTML = "";
+    const service=new google.maps.DistanceMatrixService();
+    const origins=[a,b,c,d]; const destinations=[a,b,c,d];
+    output.innerHTML="<div class='small'>Calculating…</div>";
 
-    if(!b || !c){ output.innerHTML = "<div class='error'>Please fill both addresses.</div>"; return; }
-    if(!email){ output.innerHTML = "<div class='error'>Please enter your email.</div>"; return; }
-    if(!mapsLoaded){ output.innerHTML = "<div class='error'>Google Maps API not loaded.</div>"; return; }
+    service.getDistanceMatrix({origins,destinations,travelMode:google.maps.TravelMode.DRIVING,unitSystem:google.maps.UnitSystem.METRIC}, (response,status)=>{
+        if(status!=="OK"){ output.innerHTML=`<div class='error'>Error: ${status}</div>`; return; }
 
-    const service = new google.maps.DistanceMatrixService();
-    const origins = [a,b,c,d];
-    const destinations = [a,b,c,d];
-
-    output.innerHTML = "<div class='small'>Calculating…</div>";
-
-    service.getDistanceMatrix({
-        origins,
-        destinations,
-        travelMode: google.maps.TravelMode.DRIVING,
-        unitSystem: google.maps.UnitSystem.METRIC
-    }, (response, status) => {
-        if(status !== "OK"){ output.innerHTML=`<div class='error'>Error: ${status}</div>`; return; }
-
-        const rows = response.rows;
-        let meters=0, seconds=0;
-        function addLeg(i,j){ const el = rows[i].elements[j]; if(el && el.status==="OK"){ meters+=el.distance.value; seconds+=el.duration.value; } }
+        const rows=response.rows; let meters=0, seconds=0;
+        function addLeg(i,j){ const el=rows[i].elements[j]; if(el&&el.status==="OK"){ meters+=el.distance.value; seconds+=el.duration.value; } }
         addLeg(0,1); addLeg(1,2); addLeg(2,0);
 
-        const miles = (meters/1609.34).toFixed(1);
-        const mins = Math.round(seconds/60);
+        const miles=(meters/1609.34).toFixed(1);
+        const mins=Math.round(seconds/60);
 
-        let quote=0, rateType="Long distance";
-        if(miles<50 && mins<60){ quote=110; rateType="Local rate"; } else { quote=(miles*1.2).toFixed(0); }
+        let quote=0; if(miles<50&&mins<60){ quote=110; } else { quote=(miles*1.2).toFixed(0); }
 
-        output.innerHTML = `
-            <p><strong>Your quote:</strong> £${quote}</p>
-        `;
+        output.innerHTML=`<p><strong>Your quote:</strong> £${quote}</p>`;
 
-        // Auto-submit to database via POST using a hidden form
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.style.display = 'none';
-
+        // Auto-submit to database
+        const form=document.createElement('form'); form.method='POST'; form.style.display='none';
         ['collection','delivery','miles','minutes','quoteValue','customerEmail','bikeModel'].forEach(name=>{
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.value = {
-                collection: b,
-                delivery: c,
-                miles: miles,
-                minutes: mins,
-                quoteValue: quote,
-                customerEmail: email,
-                bikeModel: bikeModel
-            }[name];
+            const input=document.createElement('input'); input.type='hidden'; input.name=name;
+            input.value={collection:b,delivery:c,miles:miles,minutes:mins,quoteValue:quote,customerEmail:email,bikeModel:bikeModel}[name];
             form.appendChild(input);
         });
-
-        document.body.appendChild(form);
-        form.submit();
+        document.body.appendChild(form); form.submit();
     });
 }
 </script>
