@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
         'bikeModel'  => htmlspecialchars($_POST['bikeModel'] ?? '')
     ];
 
-    // email me
+    // Email notification
     $to = 'info@bikesinavan.co.uk';  
     $subject = 'New BikesInAVan Quote Submitted';
     $message = "
@@ -80,28 +80,14 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
 .logo img { height:50px; margin-right:10px; vertical-align:middle; }
 .brand h1, .brand p { margin:0; color:#fff; }
 .muted { color:#aaa; }
+.calc-card, .hero-left p, .hero-left h2 { margin:0; }
 
-/* Hero section */
-.hero { display:flex; flex-direction:column; background:#111; padding:20px; border-radius:10px; margin-bottom:20px; }
-.hero-left { width:100%; }
-.hero-left h2 { font-size:1.6em; margin-bottom:12px; }
-.hero-left .eyebrow { font-weight:600; margin-bottom:6px; color:#4CAF50; }
-.hero-left p { color:#ccc; margin-bottom:20px; }
-
-/* Calculator card */
-.calc-card { background:#111; padding:18px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.5); margin-top:10px; }
-.calc-card label { display:block; margin-top:10px; font-weight:600; }
-.calc-card input { width:100%; padding:10px; margin-top:6px; box-sizing:border-box; border-radius:6px; border:1px solid #555; background:#111; color:#fff; }
-.calc-card button { margin-top:12px; padding:10px 14px; cursor:pointer; background:#4CAF50; border:none; color:#fff; font-weight:600; }
-.calc-card button:hover { background:#45a049; }
-#output { margin-top:20px; }
+/* Quote box */
 .submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-bottom:20px; }
-.error { color:#f55; font-weight:600; margin-top:10px; }
 
 /* Responsive */
 @media (min-width: 600px){
     .hero { flex-direction:row; justify-content:space-between; }
-    .hero-left, .hero-right { width:48%; }
 }
 </style>
 </head>
@@ -128,14 +114,12 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
     <h4>Your Quote</h4>
     <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
     <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
-    <p><strong>Distance:</strong> <?= $submitted_quote['miles'] ?> miles</p>
-    <p><strong>Time:</strong> <?= $submitted_quote['minutes'] ?> minutes</p>
-    <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
     <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
+    <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
     <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
 </div>
-<?php endif; ?>
-
+<?php else: ?>
+<!-- Only display the form if no quote has been submitted -->
 <section class="hero">
     <div class="hero-left">
         <div class="eyebrow">Trusted motorcycle transport</div>
@@ -146,24 +130,18 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
             <h3>Get an Instant Quote</h3>
             <label for="addrB">Collection Address</label>
             <input id="addrB" type="text" placeholder="e.g. BB1 2AB, Blackburn" autocomplete="off"/>
-
             <label for="addrC">Delivery Address</label>
             <input id="addrC" type="text" placeholder="e.g. DN4 5PJ, Doncaster" autocomplete="off"/>
-
             <label for="customerEmail">Email</label>
             <input type="email" id="customerEmail" placeholder="your@email.com"/>
-
             <label for="bikeModel">Bike Make/Model</label>
             <input type="text" id="bikeModel" placeholder="Make and model of bike"/>
-
             <button id="calcBtn">Calculate distance & quote</button>
             <div id="output"></div>
         </div>
     </div>
-    <div class="hero-right">
-        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png'); width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px;"></div>
-    </div>
 </section>
+<?php endif; ?>
 
 <footer style="margin-top:20px;">&copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport • <span class="muted">All rights reserved</span></footer>
 </div>
@@ -180,14 +158,14 @@ function initApp() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('calcBtn').addEventListener('click', onCalculate);
+    const btn = document.getElementById('calcBtn');
+    if(btn) btn.addEventListener('click', onCalculate);
 });
 
 function onCalculate() {
     const a="DN7 6LX, Hatfield, Doncaster";
     const b=document.getElementById('addrB').value.trim();
     const c=document.getElementById('addrC').value.trim();
-    const d=a;
     const email=document.getElementById('customerEmail').value.trim();
     const bikeModel=document.getElementById('bikeModel').value.trim();
     const output=document.getElementById('output'); output.innerHTML="";
@@ -197,8 +175,8 @@ function onCalculate() {
 
     const service=new google.maps.DistanceMatrixService();
     service.getDistanceMatrix({
-        origins:[a,b,c,d],
-        destinations:[a,b,c,d],
+        origins:[a,b,c,a],
+        destinations:[a,b,c,a],
         travelMode:google.maps.TravelMode.DRIVING,
         unitSystem:google.maps.UnitSystem.METRIC
     }, (response,status)=>{
