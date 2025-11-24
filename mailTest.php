@@ -1,6 +1,6 @@
 <?php
 
-$to = 'coxy911@gmail.com';
+$to = 'info@bikesinavan.co.uk';
 
 // Email subject
 $subject = 'Test BikesInAVan Quote Email';
