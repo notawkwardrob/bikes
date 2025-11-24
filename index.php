@@ -43,7 +43,7 @@ try {
     $mail->isSMTP();
     $mail->Host = 'mail.bikesinavan.co.uk';
     $mail->SMTPAuth = true;
-    $mail->Username = 'you@bikesinavan.co.uk';
+    $mail->Username = 'info@bikesinavan.co.uk';
     $mail->Password = 'emailPassword';
     $mail->SMTPSecure = 'tls';
     $mail->Port = 465;
