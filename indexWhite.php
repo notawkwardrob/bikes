@@ -126,6 +126,12 @@ body{
   gap:12px;
   justify-content:space-between;
 }
+.site-logo {
+  height: 110px;   
+  width: auto;     
+  display: block;
+  max-height: 120px; 
+}
 .brand{
   display:flex;
   gap:12px;
@@ -226,7 +232,7 @@ body{
 <div class="container">
   <header class="header" role="banner">
     <div class="brand">
-      <img src="images/newLogo.png" alt="BikesInAVan logo">
+     <img src="/images/newLogo.png" alt="Site name" class="site-logo">
       <div>
         <h1>BikesInAVan</h1>
         <div style="color:var(--muted);font-size:0.9rem">Secure motorcycle transport</div>
