@@ -111,7 +111,7 @@ header { display:flex; flex-wrap:wrap; justify-content:space-between; align-item
 
 <header>
     <div class="logo">
-        <img src="newLogo.png" alt="BikesInAVan logo"/>
+        <img src="/images/newLogo.png" alt="BikesInAVan logo"/>
         <div class="brand">
             <h1>bikesinavan.co.uk</h1>
             <p>Secure motorcycle transport.</p>
