@@ -1,236 +1,443 @@
 <?php
+// index.php - Clean modern redesign (Design A)
+// ---------------------------
+// Replace the placeholders below with your real credentials on your server.
+// ---------------------------
+
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-// Database configuration
+// --- CONFIG (replace placeholders) ---
 $dbHost = 'localhost';
 $dbName = 'bikesina_quotes';
 $dbUser = 'bikesina_bikesina';
 $dbPass = 'Temppassword';
 
+$emailRecipient = 'EMAIL_TO'; // e.g. 'info@bikesinavan.co.uk'
+$emailFrom = 'no-reply@yourdomain.co.uk'; // set a valid from address
+
+// --- end config ---
+
 $submitted_quote = null;
 
+// Connect DB (PDO)
 try {
-    $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8", $dbUser, $dbPass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    ]);
 } catch (Exception $e) {
-    die("Database connection failed: " . $e->getMessage());
+    // Fail gracefully for the frontend — show a lightweight message later if needed
+    $pdo = null;
+    error_log("DB connect error: " . $e->getMessage());
 }
 
-// Handle submitted quote
+// Handle POSTed quote (auto-submitted by JS)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
     $submitted_quote = [
-        'collection' => htmlspecialchars($_POST['collection'] ?? ''),
-        'delivery'   => htmlspecialchars($_POST['delivery'] ?? ''),
-        'miles'      => htmlspecialchars($_POST['miles'] ?? ''),
-        'minutes'    => htmlspecialchars($_POST['minutes'] ?? ''),
-        'quote'      => htmlspecialchars($_POST['quoteValue'] ?? ''),
-        'email'      => htmlspecialchars($_POST['customerEmail'] ?? ''),
-        'bikeModel'  => htmlspecialchars($_POST['bikeModel'] ?? '')
+        'collection' => substr(trim($_POST['collection'] ?? ''), 0, 255),
+        'delivery'   => substr(trim($_POST['delivery'] ?? ''), 0, 255),
+        'miles'      => substr(trim($_POST['miles'] ?? ''), 0, 20),
+        'minutes'    => substr(trim($_POST['minutes'] ?? ''), 0, 20),
+        'quote'      => substr(trim($_POST['quoteValue'] ?? ''), 0, 20),
+        'email'      => substr(trim($_POST['customerEmail'] ?? ''), 0, 255),
+        'bikeModel'  => substr(trim($_POST['bikeModel'] ?? ''), 0, 255),
     ];
 
-    // Email
-    $to = 'info@bikesinavan.co.uk';  
+    // Send notification email (simple mail). For more reliable delivery use SMTP/PHPMailer.
+    $to = $emailRecipient;
     $subject = 'New BikesInAVan Quote Submitted';
-    $message = "
-A new motorcycle transport quote has been submitted:
-
-Collection: {$submitted_quote['collection']}
-Delivery: {$submitted_quote['delivery']}
-Distance: {$submitted_quote['miles']} miles
-Time: {$submitted_quote['minutes']} minutes
-Bike: {$submitted_quote['bikeModel']}
-Email: {$submitted_quote['email']}
-Quote: £{$submitted_quote['quote']}
-";
-    $headers = "From: no-reply@bikesinavan.co.uk\r\n";
+    $message = "A new motorcycle transport quote has been submitted:\n\n"
+        . "Collection: {$submitted_quote['collection']}\n"
+        . "Delivery:   {$submitted_quote['delivery']}\n"
+        . "Distance:   {$submitted_quote['miles']} miles\n"
+        . "Time:       {$submitted_quote['minutes']} minutes\n"
+        . "Bike:       {$submitted_quote['bikeModel']}\n"
+        . "Customer:   {$submitted_quote['email']}\n"
+        . "Quote:      £{$submitted_quote['quote']}\n\n";
+    $headers = "From: {$emailFrom}\r\n";
     $headers .= "Reply-To: {$submitted_quote['email']}\r\n";
-    mail($to, $subject, $message, $headers);
 
-    // Save to database
-    $stmt = $pdo->prepare("INSERT INTO quotes 
-        (collection, delivery, miles, minutes, quote, email, bike_model)
-        VALUES (:collection, :delivery, :miles, :minutes, :quote, :email, :bikeModel)
-    ");
-    $stmt->execute([
-        ':collection' => $submitted_quote['collection'],
-        ':delivery'   => $submitted_quote['delivery'],
-        ':miles'      => $submitted_quote['miles'],
-        ':minutes'    => $submitted_quote['minutes'],
-        ':quote'      => $submitted_quote['quote'],
-        ':email'      => $submitted_quote['email'],
-        ':bikeModel'  => $submitted_quote['bikeModel']
-    ]);
+    @mail($to, $subject, $message, $headers);
+
+    // Save to DB (if connected)
+    if ($pdo) {
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO quotes 
+                    (collection, delivery, miles, minutes, quote, email, bike_model, created_at)
+                VALUES
+                    (:collection, :delivery, :miles, :minutes, :quote, :email, :bikeModel, NOW())
+            ");
+            $stmt->execute([
+                ':collection' => $submitted_quote['collection'],
+                ':delivery'   => $submitted_quote['delivery'],
+                ':miles'      => $submitted_quote['miles'],
+                ':minutes'    => $submitted_quote['minutes'],
+                ':quote'      => $submitted_quote['quote'],
+                ':email'      => $submitted_quote['email'],
+                ':bikeModel'  => $submitted_quote['bikeModel'],
+            ]);
+        } catch (Exception $e) {
+            error_log("DB insert error: " . $e->getMessage());
+        }
+    }
 }
+
 ?>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BikesInAVan — Motorcycle Transport</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BikesInAVan — Instant Quote</title>
+
+<!-- Clean modern (Design A) styles -->
 <style>
-body { font-family: Montserrat, sans-serif; margin:0; padding:0; background:#000; color:#fff; }
-a { color:#4CAF50; text-decoration:none; }
-.site { max-width: 100%; padding:10px; margin:0 auto; }
-header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.logo img { height:50px; margin-right:10px; vertical-align:middle; }
-.brand h1, .brand p { margin:0; color:#fff; }
-.muted { color:#aaa; }
+:root{
+  --bg:#ffffff;
+  --card:#f8f9fb;
+  --muted:#6b7280;
+  --accent:#16a34a; /* green */
+  --text:#0f172a;
+  --radius:12px;
+  --max-width:720px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.container{
+  max-width:var(--max-width);
+  margin:18px auto;
+  padding:16px;
+}
 
-/* Quote display */
-.submitted-quote { background:#222; padding:18px; border-radius:10px; border:1px solid #4CAF50; margin-bottom:20px; }
+/* header */
+.header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  justify-content:space-between;
+}
+.brand{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.brand img{height:46px;width:46px;border-radius:8px;object-fit:cover}
+.brand h1{font-size:1.1rem;margin:0}
+.header-right{text-align:right;font-size:0.9rem;color:var(--muted)}
 
-/* Hero section */
-.hero { display:flex; flex-direction:column; background:#111; padding:20px; border-radius:10px; margin-bottom:20px; }
-.hero-left { width:100%; }
-.hero-left h2 { font-size:1.6em; margin-bottom:12px; }
-.hero-left .eyebrow { font-weight:600; margin-bottom:6px; color:#4CAF50; }
-.hero-left p { color:#ccc; margin-bottom:20px; }
+/* quote card (shows top after submit) */
+.quote-card{
+  background:linear-gradient(180deg, #ffffff 0%, #f7fbf7 100%);
+  border:1px solid #e6f3ea;
+  padding:16px;
+  border-radius:var(--radius);
+  box-shadow:0 6px 18px rgba(16,24,40,0.04);
+  margin:16px 0;
+}
+.quote-card h2{margin:0 0 8px 0;font-size:1rem}
+.quote-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  font-size:0.95rem;
+  color:var(--text);
+}
+.quote-grid p{margin:0}
+.quote-amount{
+  margin-top:12px;
+  font-weight:700;
+  font-size:1.25rem;
+  color:var(--accent);
+}
 
-/* Calculator card */
-.calc-card { background:#111; padding:18px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.5); margin-top:10px; }
-.calc-card label { display:block; margin-top:10px; font-weight:600; }
-.calc-card input { width:100%; padding:10px; margin-top:6px; box-sizing:border-box; border-radius:6px; border:1px solid #555; background:#111; color:#fff; }
-.calc-card button { margin-top:12px; padding:10px 14px; cursor:pointer; background:#4CAF50; border:none; color:#fff; font-weight:600; }
-.calc-card button:hover { background:#45a049; }
-#output { margin-top:20px; }
-.error { color:#f55; font-weight:600; margin-top:10px; }
+/* layout */
+.main{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
 
-/* Responsive */
-@media (min-width: 600px){
-    .hero { flex-direction:row; justify-content:space-between; }
-    .hero-left, .hero-right { width:48%; }
+/* hero card with form */
+.hero{
+  background:var(--card);
+  padding:18px;
+  border-radius:calc(var(--radius) - 2px);
+  box-shadow:0 6px 18px rgba(16,24,40,0.03);
+}
+.kicker{color:var(--muted);font-weight:600;font-size:0.85rem;margin-bottom:8px}
+.hero h2{margin:0 0 8px 0;font-size:1.25rem}
+.hero p{margin:0 0 12px 0;color:var(--muted)}
+
+/* calc form */
+.calc-card{background:transparent;padding:0;margin-top:8px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:0.85rem;color:var(--muted);margin-bottom:6px}
+.field input[type="text"],
+.field input[type="email"]{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid #e6e9ef;
+  background:#fff;
+  color:var(--text);
+  font-size:0.95rem;
+}
+.row{display:flex;gap:10px}
+.row .field{flex:1}
+.button{
+  display:inline-block;
+  width:100%;
+  padding:12px 14px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:700;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-size:0.95rem;
+}
+.small-muted{font-size:0.85rem;color:var(--muted);margin-top:8px}
+
+/* output */
+#output{margin-top:12px;color:var(--muted);font-weight:600}
+
+/* footer */
+.footer{margin-top:18px;color:var(--muted);font-size:0.85rem;text-align:center}
+
+/* responsive */
+@media (min-width:760px){
+  .main{grid-template-columns:1fr 320px}
+  .hero{padding:24px}
+  .calc-card{max-width:580px}
 }
 </style>
 </head>
 <body>
-<div class="site">
+<div class="container">
+  <header class="header" role="banner">
+    <div class="brand">
+      <img src="images/logo-placeholder.png" alt="BikesInAVan logo">
+      <div>
+        <h1>BikesInAVan</h1>
+        <div style="color:var(--muted);font-size:0.9rem">Secure motorcycle transport</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div>Call now</div>
+      <div style="font-weight:800;color:var(--text)">07711 926842</div>
+      <div style="color:var(--muted)">info@bikesinavan.co.uk</div>
+    </div>
+  </header>
 
-<header>
-    <div class="logo">
-        <img src="images/ChatGPT Image Aug 10, 2025, 02_00_34 PM.png" alt="BikesInAVan logo"/>
-        <div class="brand">
-            <h1>bikesinavan.co.uk</h1>
-            <p>Secure motorcycle transport.</p>
+  <?php if ($submitted_quote): ?>
+    <section class="quote-card" aria-live="polite">
+      <h2>Your Quote</h2>
+      <div class="quote-grid">
+        <div><strong>Collection</strong><p><?= htmlspecialchars($submitted_quote['collection']) ?></p></div>
+        <div><strong>Delivery</strong><p><?= htmlspecialchars($submitted_quote['delivery']) ?></p></div>
+
+        <div><strong>Bike</strong><p><?= htmlspecialchars($submitted_quote['bikeModel']) ?></p></div>
+        <div><strong>Email</strong><p><?= htmlspecialchars($submitted_quote['email']) ?></p></div>
+
+        <div><strong>Distance</strong><p><?= htmlspecialchars($submitted_quote['miles']) ?> miles</p></div>
+        <div><strong>Time</strong><p><?= htmlspecialchars($submitted_quote['minutes']) ?> mins</p></div>
+      </div>
+
+      <div class="quote-amount">£<?= htmlspecialchars($submitted_quote['quote']) ?></div>
+      <div class="small-muted">Thank you — we've emailed the details to the team.</div>
+    </section>
+  <?php endif; ?>
+
+  <main class="main" role="main">
+    <section class="hero" aria-labelledby="hero-heading">
+      <div>
+        <div class="kicker">Trusted motorcycle transport</div>
+        <h2 id="hero-heading">Door-to-door across the UK</h2>
+        <p class="small-muted">Professional, insured transport in a secure, enclosed van — for classics and moderns.</p>
+      </div>
+
+      <!-- Only show form if no submitted quote (server-side) -->
+      <?php if (!$submitted_quote): ?>
+      <div class="calc-card" aria-labelledby="calc-heading">
+        <h3 id="calc-heading" style="margin-top:12px;margin-bottom:10px;">Get an instant quote</h3>
+
+        <div class="field">
+          <label for="addrB">Collection address</label>
+          <input id="addrB" type="text" placeholder="e.g. BB1 2AB, Blackburn" autocomplete="off" inputmode="text" />
         </div>
-    </div>
-    <div style="text-align:right">
-        <div class="small muted">Call now</div>
-        <div style="font-weight:800;font-family:Montserrat">07711926842</div>
-        <div class="muted small">info@bikesinavan.co.uk</div>
-    </div>
-</header>
 
-<?php if ($submitted_quote): ?>
-<div class="submitted-quote">
-    <h4>Your Quote</h4>
-    <p><strong>Collection:</strong> <?= $submitted_quote['collection'] ?></p>
-    <p><strong>Delivery:</strong> <?= $submitted_quote['delivery'] ?></p>
-    <p><strong>Email:</strong> <?= $submitted_quote['email'] ?></p>
-    <p><strong>Bike:</strong> <?= $submitted_quote['bikeModel'] ?></p>
-    <p><strong>Quote:</strong> £<?= $submitted_quote['quote'] ?></p>
-</div>
-<?php endif; ?>
-
-<?php if (!$submitted_quote): ?>
-<section class="hero">
-    <div class="hero-left">
-        <div class="eyebrow">Trusted motorcycle transport</div>
-        <h2>We move cherished bikes safely — door-to-door across the UK</h2>
-        <p class="muted">Professional, insured motorcycle transport in a secure, enclosed van. Perfect for classics, moderns and everything in between.</p>
-
-        <div class="calc-card">
-            <h3>Get an Instant Quote</h3>
-            <label for="addrB">Collection Address</label>
-            <input id="addrB" type="text" placeholder="e.g. BB1 2AB, Blackburn" autocomplete="off"/>
-
-            <label for="addrC">Delivery Address</label>
-            <input id="addrC" type="text" placeholder="e.g. DN4 5PJ, Doncaster" autocomplete="off"/>
-
-            <label for="customerEmail">Email</label>
-            <input type="email" id="customerEmail" placeholder="your@email.com"/>
-
-            <label for="bikeModel">Bike Make/Model</label>
-            <input type="text" id="bikeModel" placeholder="Make and model of bike"/>
-
-            <button id="calcBtn">Calculate distance & quote</button>
-            <div id="output"></div>
+        <div class="field">
+          <label for="addrC">Delivery address</label>
+          <input id="addrC" type="text" placeholder="e.g. DN4 5PJ, Doncaster" autocomplete="off" inputmode="text" />
         </div>
-    </div>
-    <div class="hero-right">
-        <div class="bg" style="background-image:url('/mnt/data/A_logo_for_a_motorcycle_transportation_service_web.png'); width:100%; height:250px; background-size:cover; background-position:center; border-radius:10px;"></div>
-    </div>
-</section>
-<?php endif; ?>
 
-<footer style="margin-top:20px;">&copy; <span id="year"></span> BikesInAVan • Professional motorcycle transport • <span class="muted">All rights reserved</span></footer>
+        <div class="row">
+          <div class="field">
+            <label for="customerEmail">Your email</label>
+            <input id="customerEmail" type="email" placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label for="bikeModel">Bike make / model</label>
+            <input id="bikeModel" type="text" placeholder="e.g. Honda CBR600RR" />
+          </div>
+        </div>
+
+        <button id="calcBtn" class="button" type="button">Calculate distance & quote</button>
+        <div id="output" aria-live="polite"></div>
+        <div class="small-muted">We will automatically email and save your quote when you proceed.</div>
+      </div>
+      <?php endif; ?>
+    </section>
+
+    <!-- Right column (keep minimal - can show image or info) -->
+    <aside class="hero-right" aria-label="About">
+      <div style="background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(16,24,40,0.04);color:var(--text);">
+        <h4 style="margin:0 0 8px 0">Why BikesInAVan</h4>
+        <ul style="margin:0;padding-left:18px;color:var(--muted);font-size:0.95rem">
+          <li>Enclosed, insured transit</li>
+          <li>Experienced handling</li>
+          <li>Door-to-door service</li>
+        </ul>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="footer">&copy; <span id="year"></span> BikesInAVan — Professional motorcycle transport</footer>
 </div>
 
+<!-- Google Maps JS - replace YOUR_GOOGLE_API_KEY_HERE with your key -->
 <script>
-document.getElementById('year').textContent = new Date().getFullYear();
+/*
+  IMPORTANT: Replace the placeholder YOUR_GOOGLE_API_KEY_HERE below with your real Google API key.
+  Example:
+  src="https://maps.googleapis.com/maps/api/js?key=AIza...YOUR_KEY...&libraries=places&callback=initAutocomplete"
+*/
 </script>
 
 <script>
 let mapsLoaded = false;
+
 function initAutocomplete() {
-    mapsLoaded = true;
-    ['addrB','addrC'].forEach(id => {
-        const input = document.getElementById(id);
-        if(input && input.offsetParent !== null) { 
-            new google.maps.places.Autocomplete(input, { types: ['geocode'] });
-        }
-    });
+  mapsLoaded = true;
+
+  // Attach Places autocomplete only to visible inputs
+  ['addrB','addrC'].forEach(id => {
+    try {
+      const el = document.getElementById(id);
+      if (!el) return;
+      // offsetParent !== null indicates element is in layout/visible
+      if (el.offsetParent !== null && window.google && google.maps && google.maps.places) {
+        new google.maps.places.Autocomplete(el, { types: ['geocode'] });
+      }
+    } catch (e) {
+      // safe no-op, do not crash
+      console.error('Autocomplete attach failed for', id, e);
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('calcBtn');
-    if(btn) btn.addEventListener('click', onCalculate);
+  const btn = document.getElementById('calcBtn');
+  if (btn) btn.addEventListener('click', onCalculate);
+  document.getElementById('year').textContent = new Date().getFullYear();
 });
 
 function onCalculate() {
-    const a="DN7 6LX, Hatfield, Doncaster";
-    const b=document.getElementById('addrB').value.trim();
-    const c=document.getElementById('addrC').value.trim();
-    const email=document.getElementById('customerEmail').value.trim();
-    const bikeModel=document.getElementById('bikeModel').value.trim();
-    const output=document.getElementById('output'); output.innerHTML="";
-    if(!b||!c){ output.innerHTML="<div class='error'>Please fill both addresses.</div>"; return; }
-    if(!email){ output.innerHTML="<div class='error'>Please enter your email.</div>"; return; }
-    if(!mapsLoaded){ output.innerHTML="<div class='error'>Google Maps API not loaded.</div>"; return; }
+  const a = "DN7 6LX, Hatfield, Doncaster"; // base location
+  const b = (document.getElementById('addrB') || {}).value || '';
+  const c = (document.getElementById('addrC') || {}).value || '';
+  const email = (document.getElementById('customerEmail') || {}).value || '';
+  const bikeModel = (document.getElementById('bikeModel') || {}).value || '';
+  const output = document.getElementById('output');
 
-    const service=new google.maps.DistanceMatrixService();
-    service.getDistanceMatrix({
-        origins:[a,b,c,a],
-        destinations:[a,b,c,a],
-        travelMode:google.maps.TravelMode.DRIVING,
-        unitSystem:google.maps.UnitSystem.METRIC
-    }, (response,status)=>{
-        if(status!=="OK"){ output.innerHTML=`<div class='error'>Error: ${status}</div>`; return; }
-        const rows=response.rows; let meters=0, seconds=0;
-        function addLeg(i,j){ const el=rows[i].elements[j]; if(el&&el.status==="OK"){ meters+=el.distance.value; seconds+=el.duration.value; } }
-        addLeg(0,1); addLeg(1,2); addLeg(2,0);
+  output.textContent = '';
+  if (!b || !c) { output.innerHTML = '<div style="color:#d14343;font-weight:700">Please fill both addresses</div>'; return; }
+  if (!email) { output.innerHTML = '<div style="color:#d14343;font-weight:700">Please enter your email</div>'; return; }
+  if (!mapsLoaded) { output.innerHTML = '<div style="color:#d14343;font-weight:700">Map services not loaded</div>'; return; }
 
-        const miles=(meters/1609.34).toFixed(1);
-        const mins=Math.round(seconds/60);
+  output.innerHTML = 'Calculating…';
 
-        let quote=0; if(miles<50&&mins<60){ quote=110; } else { quote=(miles*1.2).toFixed(0); }
+  const service = new google.maps.DistanceMatrixService();
+  service.getDistanceMatrix({
+    origins: [a, b, c, a],
+    destinations: [a, b, c, a],
+    travelMode: google.maps.TravelMode.DRIVING,
+    unitSystem: google.maps.UnitSystem.METRIC,
+  }, (response, status) => {
+    if (status !== 'OK') {
+      output.innerHTML = '<div style="color:#d14343;font-weight:700">Distance lookup failed: ' + status + '</div>';
+      console.error(status, response);
+      return;
+    }
 
-        output.innerHTML=`<p><strong>Your quote:</strong> £${quote}</p>`;
+    try {
+      const rows = response.rows;
+      let meters = 0, seconds = 0;
+      function add(i,j) {
+        const el = rows[i].elements[j];
+        if (el && el.status === 'OK') {
+          meters += el.distance.value;
+          seconds += el.duration.value;
+        }
+      }
+      add(0,1); add(1,2); add(2,0);
 
-        // Auto-submit
-        const form=document.createElement('form'); form.method='POST'; form.style.display='none';
-        ['collection','delivery','miles','minutes','quoteValue','customerEmail','bikeModel'].forEach(name=>{
-            const input=document.createElement('input'); input.type='hidden'; input.name=name;
-            input.value={collection:b,delivery:c,miles:miles,minutes:mins,quoteValue:quote,customerEmail:email,bikeModel:bikeModel}[name];
-            form.appendChild(input);
-        });
-        document.body.appendChild(form); form.submit();
-    });
+      const miles = (meters / 1609.34).toFixed(1);
+      const mins = Math.round(seconds / 60);
+      let quote;
+      if (miles < 50 && mins < 60) {
+        quote = 110;
+      } else {
+        quote = Math.max(60, Math.round(miles * 1.2)); // guard minimum
+      }
+
+      output.innerHTML = '<div style="font-weight:700;color:var(--accent)">Your quote: £' + quote + '</div>';
+
+      // auto-submit hidden POST form to server (server saves + emails)
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.style.display = 'none';
+      const fields = {
+        collection: b,
+        delivery: c,
+        miles: miles,
+        minutes: mins,
+        quoteValue: quote,
+        customerEmail: email,
+        bikeModel: bikeModel
+      };
+      for (const name in fields) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = fields[name];
+        form.appendChild(input);
+      }
+      document.body.appendChild(form);
+      form.submit();
+
+    } catch (err) {
+      output.innerHTML = '<div style="color:#d14343;font-weight:700">Error processing results</div>';
+      console.error(err);
+    }
+  });
 }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initAutocomplete" async defer></script>
+
+<!-- Load Google Maps - PUT YOUR KEY in place of YOUR_GOOGLE_API_KEY_HERE -->
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjvloNz5LbhNHNqCS5058HB6PcUJa8Usw&libraries=places&callback=initAutocomplete">
+</script>
+
 </body>
 </html>
