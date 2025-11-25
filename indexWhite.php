@@ -127,7 +127,7 @@ body{
   justify-content:space-between;
 }
 .site-logo {
-  height: 10%    ;   
+  height: 20%    ;   
   width: auto;     
   display: block;
   max-height: 120px; 
