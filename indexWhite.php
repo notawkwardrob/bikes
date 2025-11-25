@@ -127,7 +127,7 @@ body{
   justify-content:space-between;
 }
 .site-logo {
-  height: 20%    ;   
+  height: 160px    ;   
   width: auto;     
   display: block;
  
