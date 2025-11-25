@@ -130,7 +130,7 @@ body{
   height: 20%    ;   
   width: auto;     
   display: block;
-  max-height: 120px; 
+ 
 }
 .brand{
   display:flex;
