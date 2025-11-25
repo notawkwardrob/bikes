@@ -226,7 +226,7 @@ body{
 <div class="container">
   <header class="header" role="banner">
     <div class="brand">
-      <img src="images/cleanLogo.png" alt="BikesInAVan logo">
+      <img src="images/newLogo.png" alt="BikesInAVan logo">
       <div>
         <h1>BikesInAVan</h1>
         <div style="color:var(--muted);font-size:0.9rem">Secure motorcycle transport</div>
