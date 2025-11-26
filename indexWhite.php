@@ -20,6 +20,7 @@ $emailFrom = 'no-reply@yourdomain.co.uk'; // set a valid from address
 // --- end config ---
 
 $submitted_quote = null;
+ $reference = random_int(10000000, 99999999);
 
 // Connect DB (PDO)
 try {
@@ -65,9 +66,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
         try {
             $stmt = $pdo->prepare("
                 INSERT INTO quotes 
-                    (collection, delivery, miles, minutes, quote, email, bike_model, created_at)
+                    (collection, delivery, miles, minutes, quote, email, bike_model, created_at, reference)
                 VALUES
-                    (:collection, :delivery, :miles, :minutes, :quote, :email, :bikeModel, NOW())
+                    (:collection, :delivery, :miles, :minutes, :quote, :email, :bikeModel, NOW(), :reference)
             ");
             $stmt->execute([
                 ':collection' => $submitted_quote['collection'],
@@ -77,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quoteValue'])) {
                 ':quote'      => $submitted_quote['quote'],
                 ':email'      => $submitted_quote['email'],
                 ':bikeModel'  => $submitted_quote['bikeModel'],
+                ':reference'  => $reference,
             ]);
         } catch (Exception $e) {
             error_log("DB insert error: " . $e->getMessage());
@@ -260,7 +262,7 @@ body{
       </div>
 
       <div class="quote-amount">£<?= htmlspecialchars($submitted_quote['quote']) ?></div>
-      <div class="small-muted">Thank you — we've emailed the details to the team.</div>
+      <div class="small-muted">Thank you — Feel free to contact us with your quote reference $quote ref</div>
     </section>
   <?php endif; ?>
 
@@ -417,6 +419,7 @@ function onCalculate() {
         customerEmail: email,
         bikeModel: bikeModel
       };
+     
       for (const name in fields) {
         const input = document.createElement('input');
         input.type = 'hidden';
