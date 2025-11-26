@@ -235,11 +235,11 @@ body{
      <img src="/images/newLogo.png" alt="Site name" class="site-logo">
       <div>
         <h1>BikesInAVan</h1>
-        <div style="color:var(--muted);font-size:0.9rem">Motorbike transport across the UK</div>
+        <div style="color:var(--muted);font-size:0.9rem">Motorbike transport</div>
       </div>
     </div>
     <div class="header-right">
-      <div>Call now</div>
+      <div>Contact</div>
       <div style="font-weight:800;color:var(--text)"><a href="tel:+447711926842">Call us</a></div>
       <div style="color:var(--muted)"><a href="mailto:info@bikesinavan.co.uk">info@bikesinavan.co.uk</a></div>
     </div>
@@ -267,7 +267,6 @@ body{
   <main class="main" role="main">
     <section class="hero" aria-labelledby="hero-heading">
       <div>
-        <div class="kicker">Trusted motorcycle transport</div>
         <h2 id="hero-heading">We move cherished bikes safely — door-to-door across the UK</h2>
         <p class="small-muted">Professional, insured motorcycle transport in a secure, enclosed van. Perfect for classics, moderns and everything in between.</p>
       </div>
@@ -312,7 +311,7 @@ body{
         <ul style="margin:0;padding-left:18px;color:var(--muted);font-size:0.95rem">
           <li>Enclosed, insured transit</li>
           <li>Handled with care</li>
-          <li>Door-to-door service</li>
+          <li>ANy size of motorbike</li>
         </ul>
       </div>
     </aside>
@@ -321,13 +320,9 @@ body{
   <footer class="footer">&copy; <span id="year"></span> BikesInAVan — Professional motorcycle transport</footer>
 </div>
 
-<!-- Google Maps JS - replace YOUR_GOOGLE_API_KEY_HERE with your key -->
+
 <script>
-/*
-  IMPORTANT: Replace the placeholder YOUR_GOOGLE_API_KEY_HERE below with your real Google API key.
-  Example:
-  src="https://maps.googleapis.com/maps/api/js?key=AIza...YOUR_KEY...&libraries=places&callback=initAutocomplete"
-*/
+
 </script>
 
 <script>
