@@ -311,7 +311,7 @@ body{
         <ul style="margin:0;padding-left:18px;color:var(--muted);font-size:0.95rem">
           <li>Enclosed, insured transit</li>
           <li>Handled with care</li>
-          <li>ANy size of motorbike</li>
+          <li>Any size of motorbike</li>
         </ul>
       </div>
     </aside>
