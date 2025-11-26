@@ -366,6 +366,7 @@ function onCalculate() {
   if (!mapsLoaded) { output.innerHTML = '<div style="color:#d14343;font-weight:700">Map services not loaded</div>'; return; }
 
   output.innerHTML = 'Calculating…';
+  sleep(1);
 
   const service = new google.maps.DistanceMatrixService();
   service.getDistanceMatrix({
