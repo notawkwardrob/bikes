@@ -268,8 +268,8 @@ body{
     <section class="hero" aria-labelledby="hero-heading">
       <div>
         <div class="kicker">Trusted motorcycle transport</div>
-        <h2 id="hero-heading">Door-to-door across the UK</h2>
-        <p class="small-muted">Professional, insured transport in a secure, enclosed van — for classics and moderns.</p>
+        <h2 id="hero-heading">We move cherished bikes safely — door-to-door across the UK</h2>
+        <p class="small-muted">Professional, insured motorcycle transport in a secure, enclosed van. Perfect for classics, moderns and everything in between.</p>
       </div>
 
       <!-- Only show form if no submitted quote (server-side) -->
@@ -298,9 +298,9 @@ body{
           </div>
         </div>
 
-        <button id="calcBtn" class="button" type="button">Calculate distance & quote</button>
+        <button id="calcBtn" class="button" type="button">Calculate quote</button>
         <div id="output" aria-live="polite"></div>
-        <div class="small-muted">We will automatically email and save your quote when you proceed.</div>
+       
       </div>
       <?php endif; ?>
     </section>
@@ -311,7 +311,7 @@ body{
         <h4 style="margin:0 0 8px 0">Why BikesInAVan</h4>
         <ul style="margin:0;padding-left:18px;color:var(--muted);font-size:0.95rem">
           <li>Enclosed, insured transit</li>
-          <li>Experienced handling</li>
+          <li>Handled with care</li>
           <li>Door-to-door service</li>
         </ul>
       </div>
