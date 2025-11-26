@@ -262,7 +262,7 @@ body{
       </div>
 
       <div class="quote-amount">£<?= htmlspecialchars($submitted_quote['quote']) ?></div>
-      <div class="small-muted">Thank you — Feel free to contact us with your quote reference $quote ref</div>
+      <div class="small-muted">Thank you — Feel free to contact us with your quote reference <b><?php $reference ?><</b>/div>
     </section>
   <?php endif; ?>
 
