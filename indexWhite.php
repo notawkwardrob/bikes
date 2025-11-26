@@ -256,13 +256,10 @@ body{
 
         <div><strong>Bike</strong><p><?= htmlspecialchars($submitted_quote['bikeModel']) ?></p></div>
         <div><strong>Email</strong><p><?= htmlspecialchars($submitted_quote['email']) ?></p></div>
-
-        <div><strong>Distance</strong><p><?= htmlspecialchars($submitted_quote['miles']) ?> miles</p></div>
-        <div><strong>Time</strong><p><?= htmlspecialchars($submitted_quote['minutes']) ?> mins</p></div>
       </div>
 
       <div class="quote-amount">£<?= htmlspecialchars($submitted_quote['quote']) ?></div>
-      <div class="small-muted">Thank you — Feel free to contact us with your quote reference <b><?php echo"$reference"; ?></b>/div>
+      <div class="small-muted">Thank you — Feel free to contact us with your quote reference <b><?php echo"$reference"; ?></b></div>
     </section>
   <?php endif; ?>
 
