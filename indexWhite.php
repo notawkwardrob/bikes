@@ -235,13 +235,13 @@ body{
      <img src="/images/newLogo.png" alt="Site name" class="site-logo">
       <div>
         <h1>BikesInAVan</h1>
-        <div style="color:var(--muted);font-size:0.9rem">Secure motorcycle transport</div>
+        <div style="color:var(--muted);font-size:0.9rem">Motorbike transport across the UK</div>
       </div>
     </div>
     <div class="header-right">
       <div>Call now</div>
-      <div style="font-weight:800;color:var(--text)">07711 926842</div>
-      <div style="color:var(--muted)">info@bikesinavan.co.uk</div>
+      <div style="font-weight:800;color:var(--text)"><a href="tel:+447711926842">Call us</a></div>
+      <div style="color:var(--muted)"><a href="mailto:info@bikesinavan.co.uk">info@bikesinavan.co.uk</a></div>
     </div>
   </header>
 
