@@ -396,10 +396,11 @@ function onCalculate() {
       const miles = (meters / 1609.34).toFixed(1);
       const mins = Math.round(seconds / 60);
       let quote;
-      if (miles < 50 || mins < 60) {
-        quote = 110;
-      } else {
-        quote = Math.max(60, Math.round(miles * 1.2)); // guard minimum
+
+      quote = Math.max(60, Math.round(miles * 1.2)); // Basic per-mile rate
+      
+      if (quote < 110) {
+        quote = 110; // Sloppy logic to enforce absolute minimum
       }
 
       output.innerHTML = '<div style="font-weight:700;color:var(--accent)">Your quote: £' + quote + '</div>';
